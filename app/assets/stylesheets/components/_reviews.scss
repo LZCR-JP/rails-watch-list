@@ -1,0 +1,42 @@
+.reviews-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid #ddd;
+}
+
+.review {
+  padding: 12px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.stars {
+  color: #ffc107;
+}
+
+.stars-empty {
+  color: #ccc;
+}
+
+.review-form {
+  background: white;
+  padding: 24px;
+
+  label {
+    display: block;
+    margin-top: 12px;
+  }
+
+  textarea,
+  select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+  }
+}
+
+.form-errors {
+  color: red;
+}

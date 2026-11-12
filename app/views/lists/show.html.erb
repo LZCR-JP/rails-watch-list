@@ -1,17 +1,85 @@
 <% if @list.photo.present? %>
-  <%= image_tag @list.photo, alt: @list.name %>
-  <% end %>
-<h1><%= @list.name %></h1>
-
-<%= link_to "Add a movie", new_list_bookmark_path(@list) %>
-
-<% @list.bookmarks.each do |bookmark| %>
-  <div>
-    <h3><%= bookmark.movie.title %></h3>
-    <p><%= bookmark.movie.overview %></p>
-    <p>Comment: <%= bookmark.comment %></p>
-    <%= button_to "Delete", bookmark_path(bookmark), method: :delete %>
-  </div>
+  <% bg = "background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('#{image_path(@list.photo)}');" %>
+<% else %>
+  <% bg = "background-color: #333;" %>
 <% end %>
 
-<%= link_to "Back to lists", lists_path %>
+<div class="list-banner" style="<%= bg %>">
+  <span class="badge-movies"><%= pluralize(@list.bookmarks.size, "movie") %></span>
+  <h1><%= @list.name %></h1>
+</div>
+
+<div class="list-content">
+  <div class="list-actions">
+    <%= link_to "add a movie", new_list_bookmark_path(@list), class: "btn-green" %>
+  </div>
+
+  <% if @list.bookmarks.empty? %>
+    <p>No movies in this list yet. Add one!</p>
+  <% end %>
+
+  <div class="movie-grid">
+    <% @list.bookmarks.each do |bookmark| %>
+      <div class="movie-card">
+        <% if bookmark.movie.poster.present? %>
+          <%= image_tag bookmark.movie.poster, alt: bookmark.movie.title %>
+        <% end %>
+
+        <div class="movie-card-body">
+          <h3>
+            <%= bookmark.movie.title %>
+            <% if bookmark.movie.rating.present? %>
+              <span class="rating">• <%= bookmark.movie.rating %> <span class="star">★</span></span>
+            <% end %>
+          </h3>
+          <p><%= bookmark.movie.overview %></p>
+
+          <div class="movie-card-footer">
+            <span class="comment">❝ <%= bookmark.comment %></span>
+            <%= button_to "delete", bookmark_path(bookmark), method: :delete, class: "delete-link" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="reviews-section">
+    <div class="reviews-list">
+      <h2>Reviews</h2>
+
+      <% @list.reviews.reject(&:new_record?).each do |review| %>
+        <div class="review">
+          <p>
+            <span class="stars"><%= "★" * review.rating %><span class="stars-empty"><%= "★" * (5 - review.rating) %></span></span>
+            <em><%= time_ago_in_words(review.created_at) %> ago</em>
+          </p>
+          <p><%= review.comment %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="review-form">
+      <h2>Add your review</h2>
+
+      <%= form_with model: [@list, @review] do |f| %>
+        <% if @review.errors.any? %>
+          <ul class="form-errors">
+            <% @review.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <%= f.label :comment %>
+        <%= f.text_area :comment, placeholder: "Add your review here..." %>
+
+        <%= f.label :rating %>
+        <%= f.select :rating, (1..5).to_a, prompt: "Choose a rating" %>
+
+        <%= f.submit "Create Review", class: "btn-green" %>
+      <% end %>
+    </div>
+  </div>
+
+  <%= link_to "← Back to lists", lists_path, class: "btn-back" %>
+</div>
