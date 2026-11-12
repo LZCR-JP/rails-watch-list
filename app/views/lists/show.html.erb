@@ -1,0 +1,17 @@
+<% if @list.photo.present? %>
+  <%= image_tag @list.photo, alt: @list.name %>
+  <% end %>
+<h1><%= @list.name %></h1>
+
+<%= link_to "Add a movie", new_list_bookmark_path(@list) %>
+
+<% @list.bookmarks.each do |bookmark| %>
+  <div>
+    <h3><%= bookmark.movie.title %></h3>
+    <p><%= bookmark.movie.overview %></p>
+    <p>Comment: <%= bookmark.comment %></p>
+    <%= button_to "Delete", bookmark_path(bookmark), method: :delete %>
+  </div>
+<% end %>
+
+<%= link_to "Back to lists", lists_path %>
